@@ -1,0 +1,10 @@
+model,task,pairs,label_flips,recommendation_flips,choice_flips,decision_flips,decision_flip_rate
+llama,classification,195,0,0,0,0,0.0
+llama,decision_answering,195,0,0,1,1,0.005128205128205128
+llama,recommendation,174,0,0,0,0,0.0
+mistral,classification,195,1,0,0,1,0.005128205128205128
+mistral,decision_answering,195,0,0,0,0,0.0
+mistral,recommendation,174,0,0,0,0,0.0
+qwen,classification,195,0,0,0,0,0.0
+qwen,decision_answering,195,0,0,3,3,0.015384615384615385
+qwen,recommendation,174,0,4,0,4,0.022988505747126436

@@ -1,0 +1,4 @@
+model,total_pairs,classification_pairs,recommendation_pairs,decision_answering_pairs,label_flips,label_flip_rate,recommendation_flips,recommendation_flip_rate,choice_flips,choice_flip_rate,decision_flips,decision_flip_rate
+llama,564,195,174,195,0,0.0,0,0.0,1,0.005128205128205128,1,0.0017730496453900709
+mistral,564,195,174,195,1,0.005128205128205128,0,0.0,0,0.0,1,0.0017730496453900709
+qwen,564,195,174,195,0,0.0,4,0.022988505747126436,3,0.015384615384615385,7,0.012411347517730497

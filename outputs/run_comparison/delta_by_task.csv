@@ -1,0 +1,10 @@
+model,task,pairs_run1,label_flips_run1,recommendation_flips_run1,choice_flips_run1,decision_flips_run1,decision_flip_rate_run1,pairs_run2,label_flips_run2,recommendation_flips_run2,choice_flips_run2,decision_flips_run2,decision_flip_rate_run2,pairs_delta,label_flips_delta,recommendation_flips_delta,choice_flips_delta,decision_flips_delta,decision_flip_rate_delta
+llama,classification,195,0,0,0,0,0.0,195,0,0,0,0,0.0,0,0,0,0,0,0.0
+llama,decision_answering,195,0,0,1,1,0.005128205128205128,195,0,0,11,11,0.05641025641025641,0,0,0,10,10,0.05128205128205128
+llama,recommendation,174,0,0,0,0,0.0,174,0,0,0,0,0.0,0,0,0,0,0,0.0
+mistral,classification,195,1,0,0,1,0.005128205128205128,195,1,0,0,1,0.005128205128205128,0,0,0,0,0,0.0
+mistral,decision_answering,195,0,0,0,0,0.0,195,0,0,1,1,0.005128205128205128,0,0,0,1,1,0.005128205128205128
+mistral,recommendation,174,0,0,0,0,0.0,174,0,0,0,0,0.0,0,0,0,0,0,0.0
+qwen,classification,195,0,0,0,0,0.0,195,0,0,0,0,0.0,0,0,0,0,0,0.0
+qwen,decision_answering,195,0,0,3,3,0.015384615384615385,195,0,0,7,7,0.035897435897435895,0,0,0,4,4,0.02051282051282051
+qwen,recommendation,174,0,4,0,4,0.022988505747126436,174,0,0,0,0,0.0,0,0,-4,0,-4,-0.022988505747126436
