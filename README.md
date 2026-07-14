@@ -1,39 +1,44 @@
-# TRUST26 Replication Package
+# Automated Counterfactual Scenario Generation for Fairness Assessment of Large Language Models
 
-## Paper
+**TRUST26 Replication Package**
 
-**Automated Counterfactual Scenario Generation for Fairness
-Assessment of Large Language Models**
-
-> The paper title may be updated to match the final accepted version.
-
----
+> The paper title may be updated to match the final version.
 
 ## Overview
 
-This repository contains the replication package for the paper **“Automated Counterfactual Scenario Generation for Fairness
-Assessment of Large Language Models”**.
+This repository contains the replication package for the paper **“Automated Counterfactual Scenario Generation for Fairness Assessment of Large Language Models”**.
 
-The package supports the reproduction of the counterfactual fairness evaluation workflow described in the paper. It includes:
+The framework evaluates whether an LLM changes its task-relevant decision after a controlled substitution of a sensitive-attribute value. The workflow:
 
-- the final task and replacement taxonomy;
-- prompt templates for all task families and subtasks;
-- neutral base scenarios;
-- original/counterfactual prompt pairs;
-- evaluation scripts for the target LLMs;
-- paper-only evaluation results;
-- paper-only summary tables and plots;
-- run-comparison artifacts;
-- documentation of the main prompt-iteration process.
+1. generates neutral scenarios for decision-oriented tasks;
+2. instantiates a task-specific prompt template for each scenario;
+3. constructs original/counterfactual prompt pairs that differ only in the value assigned to one sensitive attribute;
+4. evaluates the same prompt pairs on multiple LLMs;
+5. computes task-specific Decision Flip metrics and produces summary, comparison, and audit artifacts.
 
-The evaluation focuses on whether an LLM changes its task-relevant output when the prompt is modified only with respect to a controlled sensitive attribute replacement.
+The repository supports two reproduction workflows:
 
-The repository is designed to support two levels of reproducibility:
+- regenerating the analysis artifacts from the model outputs included in the package;
+- executing the complete workflow, from neutral scenario generation to model evaluation.
 
-1. **Result reproduction from saved outputs**, without rerunning LLM inference.
-2. **Full pipeline reproduction**, including scenario generation, prompt-pair generation, model evaluation, plots, and run comparison.
+## Experimental Configuration
 
----
+| Element | Configuration |
+|---|---:|
+| Task families | 3 |
+| Subtasks | 12 |
+| Sensitive attributes | 10 |
+| Neutral scenarios per run | 36 |
+| Counterfactual prompt pairs per run | 564 |
+| Classification pairs per run | 195 |
+| Recommendation pairs per run | 174 |
+| Decision Answering pairs per run | 195 |
+| Evaluated models | 3 |
+| Independent runs | 2 |
+| Model–pair evaluations per run | 1,692 |
+| Total model–pair evaluations | 3,384 |
+
+Within each run, the three target models were evaluated on the same set of 564 counterfactual prompt pairs. The complete procedure was repeated in a second independent run, including scenario generation and prompt-pair construction.
 
 ## Repository Structure
 
@@ -56,321 +61,129 @@ TRUST26-replicationPackage/
 └── requirements.txt
 ```
 
-## Directory Description
+## Package Contents
 
-### `data/`
+| Path | Description |
+|---|---|
+| `data/generated/` | Neutral scenarios and prompt pairs used in Run 1. |
+| `data/generated2/` | Neutral scenarios and prompt pairs used in Run 2. |
+| `data/prompts/` | Scenario-generation prompts and task-specific evaluation templates. |
+| `docs/` | Documentation of the prompt-design iterations and their Git evidence. |
+| `outputs/taxonomy/` | Final task and replacement taxonomies. |
+| `outputs/llm_runs/` | Model outputs and Decision Flip metrics for Run 1. |
+| `outputs/llm_run2/` | Model outputs and Decision Flip metrics for Run 2. |
+| `outputs/plots/` | Summary tables, plots, and audit cases for Run 1. |
+| `outputs/plots2/` | Summary tables, plots, and audit cases for Run 2. |
+| `outputs/run_comparison/` | Aggregate, delta, pair-level, and audit comparisons between the two runs. |
+| `scripts/` | Command-line entry points for generation, evaluation, analysis, and documentation. |
+| `src/` | Reusable implementation components used by the command-line scripts. |
+| `requirements.txt` | Python dependencies required by the package. |
 
-Contains the inputs used by the prompt-generation and evaluation pipeline.
+## Taxonomy
 
-```text
-data/
-├── generated/
-├── generated2/
-└── prompts/
-```
-
-#### `data/generated/`
-
-Contains the neutral scenarios and prompt pairs used for the first evaluation run:
-
-```text
-data/generated/base_scenarios.jsonl
-data/generated/prompt_pairs.jsonl
-```
-
-#### `data/generated2/`
-
-Contains the neutral scenarios and prompt pairs used for the second evaluation run:
-
-```text
-data/generated2/base_scenarios.jsonl
-data/generated2/prompt_pairs.jsonl
-```
-
-#### `data/prompts/`
-
-Contains the prompt templates used by the pipeline:
-
-```text
-data/prompts/classification/
-data/prompts/recommendation/
-data/prompts/decision_answering/
-data/prompts/scenario_generation/
-```
-
-The task-specific prompt templates are organized into three task families:
-
-- classification;
-- recommendation;
-- decision answering.
-
-The scenario-generation templates are organized by task family and subtask.
-
-### `docs/`
-
-Contains methodological documentation related to the replication package.
-
-```text
-docs/
-├── prompt_iterations.md
-└── prompt_iterations_evidence.csv
-```
-
-#### `prompt_iterations.md`
-
-Documents the main prompt-related iterations that led to the final neutral scenario-generation prompts and task-specific evaluation templates.
-
-The iterations should be interpreted as methodological phases, not as one-to-one versions of individual prompt files. Each iteration summarizes a relevant design change, its motivation, and the affected files.
-
-#### `prompt_iterations_evidence.csv`
-
-Provides structured evidence used to support the prompt-iteration summary.
-
-### `outputs/taxonomy/`
-
-Contains the final taxonomy used for prompt-pair generation.
+The taxonomy used to generate the counterfactual prompt pairs is stored in:
 
 ```text
 outputs/taxonomy/
 ├── README.md
-├── final_task_taxonomy.json
 ├── final_replacement_taxonomy.json
+├── final_task_taxonomy.json
 ├── final_taxonomy_extended.json
 └── final_taxonomy_light.json
 ```
 
-The taxonomy defines:
+The two primary artifacts are:
 
-- task families;
-- subtasks;
-- sensitive attribute axes;
-- replacement groups;
-- valid replacement values.
-
-The two main files are:
-
-- `final_task_taxonomy.json`, which defines which bias axes and replacement groups are valid for each task and subtask;
-- `final_replacement_taxonomy.json`, which defines the concrete terms that can be substituted within each replacement group.
-
-### `outputs/llm_runs/`
-
-Contains the saved model outputs and paper-only evaluation metrics for the first run.
-
-```text
-outputs/llm_runs/
-├── LLama/
-├── Mistral/
-└── Qwen/
-```
-
-Each model folder contains:
-
-```text
-results_<model>_<model_id>_all.csv
-results_<model>_<model_id>_classification.csv
-results_<model>_<model_id>_recommendation.csv
-results_<model>_<model_id>_decision_answering.csv
-```
-
-### `outputs/llm_run2/`
-
-Contains the saved model outputs and paper-only evaluation metrics for the second run.
-
-```text
-outputs/llm_run2/
-├── LLama/
-├── Mistral/
-└── Qwen/
-```
-
-The structure is the same as `outputs/llm_runs/`.
-
-### `outputs/plots/`
-
-Contains paper-only summary tables and plots for the first run.
-
-```text
-outputs/plots/
-├── cases_decision_flips.csv
-├── decision_flip_rate_by_model.pdf
-├── heatmap_decision_flip_rate_by_bias_axis.pdf
-├── summary_by_bias_axis.csv
-├── summary_by_model.csv
-├── summary_by_subtask.csv
-├── summary_by_task.csv
-└── task_flip_rates_by_model.pdf
-```
-
-### `outputs/plots2/`
-
-Contains paper-only summary tables and plots for the second run.
-
-```text
-outputs/plots2/
-├── cases_decision_flips.csv
-├── decision_flip_rate_by_model.pdf
-├── heatmap_decision_flip_rate_by_bias_axis.pdf
-├── summary_by_bias_axis.csv
-├── summary_by_model.csv
-├── summary_by_subtask.csv
-├── summary_by_task.csv
-└── task_flip_rates_by_model.pdf
-```
-
-### `outputs/run_comparison/`
-
-Contains paper-only comparison artifacts between the first and second evaluation runs.
-
-```text
-outputs/run_comparison/
-├── cases_decision_metric_changes.csv
-├── cases_new_decision_flips_in_run2.csv
-├── cases_resolved_decision_flips_in_run2.csv
-├── comparison_summary_by_bias_axis.csv
-├── comparison_summary_by_model.csv
-├── comparison_summary_by_subtask.csv
-├── comparison_summary_by_task.csv
-├── decision_flip_rate_by_model_and_run.pdf
-├── delta_by_bias_axis.csv
-├── delta_by_model.csv
-├── delta_by_subtask.csv
-├── delta_by_task.csv
-├── delta_decision_flip_rate_by_model.pdf
-├── delta_decision_flip_rate_by_model_task.pdf
-├── pair_level_comparison.csv
-└── task_flip_rates_by_model_and_run.pdf
-```
-
-These files compare decision-level flip behavior across two independent runs.
-
-### `scripts/`
-
-Contains the executable scripts used to reproduce the pipeline.
-
-```text
-scripts/
-├── compare_runs.py
-├── export_prompt_iterations.py
-├── generate_base_scenarios.py
-├── generate_prompt_pairs.py
-├── run_llm_eval.py
-├── run_pipeline.py
-└── summary_plots.py
-```
-
-Main scripts:
-
-| Script | Purpose |
+| File | Description |
 |---|---|
-| `generate_base_scenarios.py` | Generates neutral base scenarios. |
-| `generate_prompt_pairs.py` | Generates original/counterfactual prompt pairs. |
-| `run_llm_eval.py` | Runs model inference and computes paper metrics. |
-| `summary_plots.py` | Generates paper-only summaries and plots. |
-| `compare_runs.py` | Compares two evaluation runs. |
-| `run_pipeline.py` | Runs the main pipeline. |
-| `export_prompt_iterations.py` | Regenerates prompt-iteration documentation. |
+| `final_task_taxonomy.json` | Associates task families and subtasks with the applicable sensitive attributes and replacement groups. |
+| `final_replacement_taxonomy.json` | Defines the replacement values available within each sensitive attribute and replacement group. |
 
-### `src/`
+`final_taxonomy_extended.json` and `final_taxonomy_light.json` provide extended and compact representations of the combined taxonomy.
 
-Contains the source code used by the scripts.
+The taxonomy covers ten sensitive attributes:
 
-```text
-src/
-├── evaluation/
-├── llm/
-└── prompts/
-```
-
-Main components:
-
-| Directory | Purpose |
-|---|---|
-| `src/evaluation/` | Metric computation and result export. |
-| `src/llm/` | Model loading and inference utilities. |
-| `src/prompts/` | Prompt-template loading and prompt-pair generation utilities. |
-
----
+- Gender
+- Ethnicity
+- Nationality
+- Religion
+- Age
+- Disability
+- Sexual Orientation
+- Socio-Economic Status
+- Physical Appearance
+- Linguistic Background
 
 ## Task Families and Subtasks
 
-The replication package evaluates three task families.
+| Task family | Subtasks |
+|---|---|
+| Classification | `hiring_screening`, `student_evaluation`, `ticket_priority_classification`, `eligibility_classification` |
+| Recommendation | `career_path_recommendation`, `course_recommendation`, `role_assignment_recommendation`, `accessibility_accommodation_recommendation` |
+| Decision Answering | `candidate_comparison`, `scholarship_allocation`, `ticket_escalation_decision`, `public_service_priority_decision` |
 
-### Classification
+Classification tasks assign a discrete label to a single case. Recommendation tasks select an option for a profile or situation. Decision-answering tasks select between two alternatives or return a tie when allowed by the task.
 
-Classification tasks require the model to assign a discrete label to a single case.
+## Scenario and Prompt-Pair Data
 
-Subtasks:
-
-- `hiring_screening`
-- `student_evaluation`
-- `ticket_priority_classification`
-- `eligibility_classification`
-
-### Recommendation
-
-Recommendation tasks require the model to recommend one option among possible alternatives.
-
-Subtasks:
-
-- `career_path_recommendation`
-- `course_recommendation`
-- `role_assignment_recommendation`
-- `accessibility_accommodation_recommendation`
-
-### Decision Answering
-
-Decision-answering tasks require the model to make or support a choice between alternatives.
-
-Subtasks:
-
-- `candidate_comparison`
-- `scholarship_allocation`
-- `ticket_escalation_decision`
-- `public_service_priority_decision`
-
----
-
-## Metrics Included in the Paper
-
-This replication package includes only the metrics reported in the paper.
-
-### Decision Flip Rate
-
-Measures the proportion of prompt pairs for which the model changes its task-relevant decision between the original and counterfactual prompt.
-
-This is the aggregate decision-level metric.
-
-### Label Flip
-
-Used for classification tasks. A label flip occurs when the predicted label changes between the original and counterfactual prompt:
+The two experimental runs use separate input sets:
 
 ```text
-original_label != counterfactual_label
+data/generated/
+├── base_scenarios.jsonl
+└── prompt_pairs.jsonl
+
+data/generated2/
+├── base_scenarios.jsonl
+└── prompt_pairs.jsonl
 ```
 
-### Recommendation Flip
+The `base_scenarios.jsonl` files store the 36 neutral scenarios used in each run. Every scenario is associated with a scenario identifier, task family, subtask, scenario text, task instruction, and generation model.
 
-Used for recommendation tasks. A recommendation flip occurs when the recommended option changes between the original and counterfactual prompt:
+The corresponding `prompt_pairs.jsonl` files store the 564 original/counterfactual pairs generated for each run. Within a pair, the neutral scenario, task instruction, and prompt structure remain unchanged. Only the selected value of the sensitive attribute is replaced.
+
+Pair and scenario identifiers preserve the connection between generated prompts, source scenarios, model outputs, and analysis records.
+
+## Prompt Templates
+
+Prompt templates are organized by function and task family:
 
 ```text
-original_recommended_option != counterfactual_recommended_option
+data/prompts/
+├── classification/
+├── recommendation/
+├── decision_answering/
+└── scenario_generation/
+    ├── classification/
+    ├── recommendation/
+    └── decision_answering/
 ```
 
-### Choice Flip
+The `classification/`, `recommendation/`, and `decision_answering/` directories contain the templates used to construct the final evaluation prompts. Each template defines:
 
-Used for decision-answering tasks. A choice flip occurs when the selected subject changes between the original and counterfactual prompt:
+- the role assigned to the model;
+- the position of the neutral scenario;
+- the position of the contextual sensitive information;
+- the task instruction;
+- the required structured response format.
+
+The `scenario_generation/` directory contains one neutral-scenario generation prompt for each of the 12 subtasks. These prompts specify the application domain, the admissible task-relevant information, the neutrality constraints, and the expected output structure.
+
+## Models
+
+### Scenario-Generation Model
+
+The neutral scenarios used in the experiments were generated with:
 
 ```text
-original_selected_subject != counterfactual_selected_subject
+Qwen/Qwen3-4B-Instruct-2507
 ```
 
-No reasoning-similarity, confidence-shift, ranking-instability, or other auxiliary metrics are included in this replication package.
+This model was used to construct the neutral evaluation inputs.
 
----
+### Evaluated Models
 
-## Target Models
-
-The evaluation scripts support the following target models:
+The counterfactual prompt pairs were evaluated on:
 
 ```python
 MODEL_REGISTRY = {
@@ -380,17 +193,31 @@ MODEL_REGISTRY = {
 }
 ```
 
-The package supports quantized model loading through the `--quantization` option:
+The same evaluation procedure and prompt pairs were used for all three models within each run.
 
-- `none`
-- `8bit`
-- `4bit`
+## Evaluation Metrics
 
-The saved runs were produced using the same evaluation pipeline and prompt-pair structure across all models.
+The replication package reports the decision-level metrics used in the paper.
 
----
+### Decision Flip Rate
 
-## Quick Start
+The Decision Flip Rate is the proportion of evaluated counterfactual prompt pairs for which the task-relevant decision changes:
+
+```text
+Decision Flip Rate = number of Decision Flips / number of evaluated prompt pairs
+```
+
+The concrete definition of a Decision Flip depends on the task family.
+
+| Task family | Metric | Flip condition |
+|---|---|---|
+| Classification | Label Flip | The predicted label changes between the original and counterfactual prompt. |
+| Recommendation | Recommendation Flip | The recommended option changes between the original and counterfactual prompt. |
+| Decision Answering | Choice Flip | The selected alternative changes between the original and counterfactual prompt. |
+
+All aggregate results, plots, and comparison artifacts in this package are derived from these decision-level metrics.
+
+## Installation
 
 Create and activate a virtual environment:
 
@@ -399,24 +226,24 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-Install dependencies:
+Install the dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+## Reproduce the Analysis from Saved Model Outputs
 
-## Reproduce Existing Tables and Plots Without Rerunning LLMs
-
-The repository already includes saved model outputs in:
+The model outputs used in the study are already stored in:
 
 ```text
 outputs/llm_runs/
 outputs/llm_run2/
 ```
 
-To regenerate the first-run summaries and plots:
+LLM inference is not required to regenerate the analysis artifacts.
+
+To regenerate the Run 1 summaries and plots:
 
 ```bash
 python scripts/summary_plots.py \
@@ -424,7 +251,7 @@ python scripts/summary_plots.py \
   --output-dir outputs/plots
 ```
 
-To regenerate the second-run summaries and plots:
+To regenerate the Run 2 summaries and plots:
 
 ```bash
 python scripts/summary_plots.py \
@@ -443,78 +270,77 @@ python scripts/compare_runs.py \
   --output-dir outputs/run_comparison
 ```
 
----
+## Generate a New Independent Input Set
 
-## Reproduce Prompt Pair Generation
+The exact scenarios and prompt pairs used in the paper are stored in `data/generated/` and `data/generated2/`.
 
-To regenerate neutral base scenarios for the first run:
+Because scenario generation is generative, executing the following commands produces a new independent input set rather than recreating the saved scenarios verbatim.
 
-```bash
-python scripts/generate_base_scenarios.py \
-  --scenarios-per-subtask 3 \
-  --output data/generated/base_scenarios.jsonl
-```
-
-To regenerate prompt pairs for the first run:
-
-```bash
-python scripts/generate_prompt_pairs.py \
-  --scenarios data/generated/base_scenarios.jsonl \
-  --output data/generated/prompt_pairs.jsonl \
-  --max-pairs-per-group 1
-```
-
-For the second run:
+To generate three neutral scenarios for each subtask without overwriting the reported inputs:
 
 ```bash
 python scripts/generate_base_scenarios.py \
   --scenarios-per-subtask 3 \
-  --output data/generated2/base_scenarios.jsonl
+  --output data/generated_new/base_scenarios.jsonl
+```
 
+To construct the corresponding counterfactual prompt pairs:
+
+```bash
 python scripts/generate_prompt_pairs.py \
-  --scenarios data/generated2/base_scenarios.jsonl \
-  --output data/generated2/prompt_pairs.jsonl \
+  --scenarios data/generated_new/base_scenarios.jsonl \
+  --output data/generated_new/prompt_pairs.jsonl \
   --max-pairs-per-group 1
 ```
 
----
+The parameter `--max-pairs-per-group 1` generates at most one original/counterfactual pair for each applicable replacement group and scenario.
 
 ## Reproduce Model Evaluation
 
-To evaluate one model on the first-run prompt pairs:
+The reported model configuration used a maximum generation length of 120 tokens and 8-bit quantization.
+
+To evaluate Qwen3-8B on the Run 1 prompt pairs without overwriting the saved results:
 
 ```bash
 python scripts/run_llm_eval.py \
   --model qwen \
   --input data/generated/prompt_pairs.jsonl \
   --max-new-tokens 120 \
-  --output-dir outputs/llm_runs \
+  --output-dir outputs/llm_rerun_run1 \
   --quantization 8bit
 ```
 
-Repeat with:
+Repeat the command with:
 
 ```text
 --model mistral
 --model llama
 ```
 
-To evaluate one model on the second-run prompt pairs:
+To evaluate a model on the Run 2 prompt pairs, change the input and output paths:
 
 ```bash
 python scripts/run_llm_eval.py \
   --model qwen \
   --input data/generated2/prompt_pairs.jsonl \
   --max-new-tokens 120 \
-  --output-dir outputs/llm_run2 \
+  --output-dir outputs/llm_rerun_run2 \
   --quantization 8bit
 ```
 
----
+The available quantization modes are:
 
-## Full Pipeline Execution
+```text
+none
+8bit
+4bit
+```
 
-The full pipeline can be executed with:
+## Execute the Pipeline Runner
+
+The end-to-end runner coordinates scenario generation, prompt-pair generation, and multi-model evaluation.
+
+The following command generates a new input set and stores the resulting model outputs in separate directories:
 
 ```bash
 python scripts/run_pipeline.py \
@@ -522,49 +348,83 @@ python scripts/run_pipeline.py \
   --scenarios-per-subtask 3 \
   --max-pairs-per-group 1 \
   --max-new-tokens 120 \
-  --quantization 8bit
+  --scenarios-output data/generated_new/base_scenarios.jsonl \
+  --prompt-pairs-output data/generated_new/prompt_pairs.jsonl \
+  --output-dir outputs/llm_runs_new
 ```
 
-To reuse existing scenarios and prompt pairs and only rerun model evaluation:
+To reuse an existing scenario and prompt-pair set and execute only model evaluation:
 
 ```bash
 python scripts/run_pipeline.py \
   --models qwen mistral llama \
   --skip-scenario-generation \
   --skip-prompt-generation \
-  --max-new-tokens 120 \
-  --quantization 8bit
+  --scenarios-output data/generated/base_scenarios.jsonl \
+  --prompt-pairs-output data/generated/prompt_pairs.jsonl \
+  --output-dir outputs/llm_rerun_run1 \
+  --max-new-tokens 120
 ```
 
----
+For an evaluation that explicitly uses 8-bit quantization, invoke `run_llm_eval.py` separately for each target model as shown in the previous section.
 
-## Prompt Iteration Traceability
+## Scripts
+
+| Script | Description |
+|---|---|
+| `generate_base_scenarios.py` | Generates neutral scenarios for each taxonomy subtask. |
+| `generate_prompt_pairs.py` | Constructs original/counterfactual pairs from neutral scenarios, templates, and taxonomy information. |
+| `run_llm_eval.py` | Executes one target model and computes the task-specific Decision Flip metric. |
+| `summary_plots.py` | Generates per-run Decision Flip summaries, plots, and audit cases. |
+| `compare_runs.py` | Generates aggregate, delta, pair-level, and audit comparisons between two runs. |
+| `run_pipeline.py` | Coordinates scenario generation, prompt-pair construction, and multi-model evaluation. |
+| `export_prompt_iterations.py` | Reconstructs the prompt-iteration documentation from the Git history. |
+
+## Source Code
+
+Reusable components are organized under:
+
+```text
+src/
+├── evaluation/
+│   └── evaluation.py
+├── llm/
+│   ├── inference.py
+│   └── models.py
+└── prompts/
+    ├── generator.py
+    └── prompts.py
+```
+
+| Directory | Responsibility |
+|---|---|
+| `src/evaluation/` | Structured output extraction, Decision Flip computation, and result export. |
+| `src/llm/` | Model registration, loading, quantization, and inference. |
+| `src/prompts/` | Template loading, sensitive-information rendering, and prompt-pair construction. |
+
+## Prompt-Iteration Traceability
 
 The prompt-design process is documented in:
 
 ```text
 docs/prompt_iterations.md
-```
-
-This file summarizes the main methodological iterations that led to the final prompts.
-
-The iterations should be read as major design phases, including:
-
-- initial single-task prompt template;
-- structured prompt-pair generation;
-- full task/subtask template coverage;
-- subtask-specific neutral scenario generation;
-- scenario generation and export refinement;
-- proxy-name rendering correction;
-- neutral contextual labels in final prompts.
-
-The supporting structured evidence is stored in:
-
-```text
 docs/prompt_iterations_evidence.csv
 ```
 
-To regenerate the prompt-iteration documentation:
+`prompt_iterations.md` summarizes the main methodological phases that led to the final neutral-scenario generation prompts and task-specific evaluation templates.
+
+The reconstruction examines the Git history of:
+
+```text
+data/prompts/
+scripts/generate_base_scenarios.py
+scripts/generate_prompt_pairs.py
+src/prompts/
+```
+
+The documented iterations represent methodological phases rather than a complete sequence of individually versioned prompt files. `prompt_iterations_evidence.csv` records the associated commits, dates, affected artifacts, and availability of matching Git evidence.
+
+To regenerate both documentation files:
 
 ```bash
 python scripts/export_prompt_iterations.py \
@@ -573,82 +433,105 @@ python scripts/export_prompt_iterations.py \
   --output-csv docs/prompt_iterations_evidence.csv
 ```
 
----
+## Output Artifacts
 
-## Reproducibility Notes
+### Model Results
 
-The package includes both input artifacts and output artifacts.
-
-Input artifacts include:
-
-```text
-data/prompts/
-data/generated/
-data/generated2/
-outputs/taxonomy/
-```
-
-Output artifacts include:
+Run 1 and Run 2 model outputs are stored in:
 
 ```text
 outputs/llm_runs/
 outputs/llm_run2/
-outputs/plots/
-outputs/plots2/
-outputs/run_comparison/
 ```
 
-This allows reproducing the paper tables and plots without rerunning LLM inference.
-
-Rerunning model inference may produce small differences depending on hardware, quantization mode, model implementation, and decoding behavior. For direct comparability, the same models, prompt pairs, maximum generation length, and quantization configuration should be used.
-
----
-
-## Expected Output Artifacts
-
-After running the first-run plotting script, the following files should be produced in `outputs/plots/`:
+Both directories contain one subdirectory for each evaluated model:
 
 ```text
-summary_by_model.csv
-summary_by_task.csv
-summary_by_subtask.csv
-summary_by_bias_axis.csv
+LLama/
+Mistral/
+Qwen/
+```
+
+Each model directory contains:
+
+```text
+results_<model>_<model_id>_all.csv
+results_<model>_<model_id>_classification.csv
+results_<model>_<model_id>_recommendation.csv
+results_<model>_<model_id>_decision_answering.csv
+```
+
+The `_all.csv` file stores the complete evaluation output for the model. The task-specific files store the corresponding Classification, Recommendation, or Decision Answering records.
+
+### Per-Run Analysis
+
+<details>
+<summary>Files generated in <code>outputs/plots/</code> and <code>outputs/plots2/</code></summary>
+
+```text
 cases_decision_flips.csv
 decision_flip_rate_by_model.pdf
-task_flip_rates_by_model.pdf
 heatmap_decision_flip_rate_by_bias_axis.pdf
+summary_by_bias_axis.csv
+summary_by_model.csv
+summary_by_subtask.csv
+summary_by_task.csv
+task_flip_rates_by_model.pdf
 ```
 
-After running the second-run plotting script, the same files should be produced in `outputs/plots2/`.
+</details>
 
-After running the run-comparison script, the following files should be produced in `outputs/run_comparison/`:
+These directories report Decision Flip results by model, task family, subtask, and sensitive attribute. `cases_decision_flips.csv` retains the identifiers and contextual information required to inspect the cases in which the task-relevant decision changed.
+
+### Run Comparison
+
+<details>
+<summary>Files generated in <code>outputs/run_comparison/</code></summary>
 
 ```text
-comparison_summary_by_model.csv
-comparison_summary_by_task.csv
-comparison_summary_by_subtask.csv
-comparison_summary_by_bias_axis.csv
-delta_by_model.csv
-delta_by_task.csv
-delta_by_subtask.csv
-delta_by_bias_axis.csv
-pair_level_comparison.csv
 cases_decision_metric_changes.csv
 cases_new_decision_flips_in_run2.csv
 cases_resolved_decision_flips_in_run2.csv
+comparison_summary_by_bias_axis.csv
+comparison_summary_by_model.csv
+comparison_summary_by_subtask.csv
+comparison_summary_by_task.csv
 decision_flip_rate_by_model_and_run.pdf
-task_flip_rates_by_model_and_run.pdf
+delta_by_bias_axis.csv
+delta_by_model.csv
+delta_by_subtask.csv
+delta_by_task.csv
 delta_decision_flip_rate_by_model.pdf
 delta_decision_flip_rate_by_model_task.pdf
+pair_level_comparison.csv
+task_flip_rates_by_model_and_run.pdf
 ```
 
+</details>
 
----
+The comparison artifacts report aggregate results for both runs, differences between their Decision Flip rates, pair-level comparison records, and selected audit cases.
 
-## Notes and Limitations
+## Reproducibility Notes
 
-This package evaluates counterfactual stability, not population-level group fairness.
+The repository includes the scenarios, prompt pairs, model outputs, and analysis artifacts used in the study.
 
-A flip indicates that the model changed its task-relevant output after a controlled sensitive attribute replacement. Such cases should be interpreted as candidate counterfactual instabilities and inspected in context.
+The analysis tables and plots can be regenerated from the saved model outputs without executing the LLMs again. Rerunning scenario generation or model inference may produce different outputs because both stages involve generative model execution.
 
-The package does not compute demographic parity, equalized odds, equal opportunity, or other group-level fairness metrics because the generated evaluation data does not represent a population distribution with ground-truth outcomes.
+Comparable model reruns require the same:
+
+- taxonomy and prompt templates;
+- input prompt pairs;
+- model identifiers;
+- maximum generation length;
+- quantization configuration;
+- evaluation and parsing code.
+
+The two experimental runs must be treated as independent executions of the complete workflow rather than repeated evaluations of one fixed scenario set.
+
+## Scope and Interpretation
+
+The framework evaluates **local counterfactual decision stability**, not population-level group fairness.
+
+A Decision Flip indicates that the task-relevant output changed after a controlled sensitive-attribute substitution. It identifies a candidate counterfactual instability, but does not by itself establish that the resulting decision is unfair.
+
+Conversely, the absence of a Decision Flip does not establish the absence of bias. Individual cases should be interpreted together with their neutral scenario, task, subtask, sensitive attribute, replacement group, and original and counterfactual model outputs.
