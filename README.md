@@ -1,12 +1,10 @@
-# Automated Counterfactual Scenario Generation for Fairness Assessment of Large Language Models
+# Automated Counterfactual Scenario Generation for Fairness Assessment of Large Language Models: the ScenGen Framework 
 
 **TRUST26 Replication Package**
 
-> The paper title may be updated to match the final version.
-
 ## Overview
 
-This repository contains the replication package for the paper **“Automated Counterfactual Scenario Generation for Fairness Assessment of Large Language Models”**.
+This repository contains the replication package for the paper **“Automated Counterfactual Scenario Generation for Fairness Assessment of Large Language Models: the ScenGen Framework“**.
 
 The framework evaluates whether an LLM changes its task-relevant decision after a controlled substitution of a sensitive-attribute value. The workflow:
 
