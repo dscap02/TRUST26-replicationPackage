@@ -2,6 +2,12 @@
 
 **TRUST26 Replication Package**
 
+## Publication
+
+This replication package accompanies the paper **"Automated Counterfactual Scenario Generation for Fairness Assessment of Large Language Models: the ScenGen Framework"**, published at **TRUST 2026**, co-located with the 41st IEEE/ACM International Conference on Automated Software Engineering (ASE 2026).
+
+**DOI:** https://doi.org/10.1145/3843782.3844655
+
 ## Overview
 
 This repository contains the replication package for the paper **“Automated Counterfactual Scenario Generation for Fairness Assessment of Large Language Models: the ScenGen Framework“**.
